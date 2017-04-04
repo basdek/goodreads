@@ -1,0 +1,26 @@
+[
+{ 
+    "_id" : ObjectId("58e01772e521a539b08d5cb7"), 
+    "book" : ObjectId("58e00d51e521a539b08d5cb3"), 
+    "rating" : NumberInt(5), 
+    "reader" : ObjectId("58e00c9ee521a539b08d5cb2")
+},
+{ 
+    "_id" : ObjectId("58e01c7fe521a539b08d5cc3"), 
+    "rating" : NumberInt(4), 
+    "book" : ObjectId("58e00ed9e521a539b08d5cb4"), 
+    "reader" : ObjectId("58e00c9ee521a539b08d5cb2")
+},
+{ 
+    "_id" : ObjectId("58e382463e69c00ac8365fbe"), 
+    "book" : ObjectId("58e3806d3e69c00ac8365fbc"), 
+    "rating" : NumberInt(2), 
+    "reader" : ObjectId("58e00c9ee521a539b08d5cb2")
+},
+{ 
+    "_id" : ObjectId("58e3826e3e69c00ac8365fc4"), 
+    "book" : ObjectId("58e382783e69c00ac8365fc6"), 
+    "rating" : NumberInt(1), 
+    "reader" : ObjectId("58e00fb6e521a539b08d5cb6")
+}
+]

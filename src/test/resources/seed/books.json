@@ -1,0 +1,32 @@
+[
+{ 
+    "_id" : ObjectId("58e00d51e521a539b08d5cb3"), 
+    "bookTitle" : "Thus spoke Zarathustra", 
+    "author" : "Friederich Nietzsche", 
+    "isbn" : "1"
+},
+{ 
+    "_id" : ObjectId("58e00ed9e521a539b08d5cb4"), 
+    "bookTitle" : "Beyond good and evil", 
+    "author" : "Friederich Nietzsche", 
+    "isbn" : "2"
+},
+{ 
+    "_id" : ObjectId("58e00f10e521a539b08d5cb5"), 
+    "bookTitle" : "Ecce Homo", 
+    "author" : "Friederich Nietzsche", 
+    "isbn" : "3"
+},
+{ 
+    "_id" : ObjectId("58e3806d3e69c00ac8365fbc"), 
+    "bookTitle" : "Intuition pumps and other tools for thinking", 
+    "author" : "Daniel Dennett", 
+    "isbn" : "4"
+},
+{ 
+    "_id" : ObjectId("58e380ba3e69c00ac8365fbd"), 
+    "author" : "Nassim Nicholas Taleb", 
+    "bookTitle" : "The black swan", 
+    "isbn" : "5"
+}
+]

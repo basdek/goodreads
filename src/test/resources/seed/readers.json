@@ -1,0 +1,20 @@
+[
+{ 
+    "_id" : ObjectId("58e00c9ee521a539b08d5cb2"), 
+    "name" : "Bas", 
+    "surname" : "Kwant, de", 
+    "slug" : "kwant-de-bas"
+},
+{ 
+    "_id" : ObjectId("58e00fb6e521a539b08d5cb6"), 
+    "name" : "Lorum", 
+    "surname" : "Ipsum", 
+    "slug" : "ipsum-lorum"
+},
+{ 
+    "_id" : ObjectId("58e3b0fe3e69c00ac8365fca"), 
+    "name" : "Read", 
+    "surname" : "Nothing", 
+    "slug" : "nothing-read"
+}
+]
