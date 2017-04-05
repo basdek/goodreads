@@ -1,8 +1,8 @@
 package com.basdek.goodreads.features.reader
 
-import com.basdek.goodreads.ConnectionService
 import com.basdek.goodreads.features.reader.GetRatingsByUserSlug._
 import com.basdek.goodreads.models.read.{Book, Rating, Reader}
+import com.basdek.goodreads.services.ConnectionService
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 
@@ -33,7 +33,8 @@ class GetRatingsByUserSlug {
       //Can we prevent execution of this?
       books <- db.collection[BSONCollection]("books").find(booksQuery(ratings.map(x => x.book))).sort(sortById).cursor[Book]().collect[List]()
 
-    } yield Result(reader.head.username, ratings zip books map { x => RatingView(x) })
+      result = Result(reader.head.username, ratings zip books map {x => RatingView(x)})
+    } yield result
   }
 }
 

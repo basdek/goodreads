@@ -1,8 +1,8 @@
 package com.basdek.goodreads.features.book
 
-import com.basdek.goodreads.ConnectionService
 import com.basdek.goodreads.features.book.GetRatingsByISBN._
 import com.basdek.goodreads.models.read._
+import com.basdek.goodreads.services.ConnectionService
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
 
@@ -27,20 +27,21 @@ class GetRatingsByISBN {
     for {
       db <- db()
       book <- db.collection[BSONCollection]("books").find(bookQuery).cursor[Book]().collect[List](1)
-      if book.length == 1
       ratings <- db.collection[BSONCollection]("ratings").find(ratingsQuery(book.head._id)).sort(sortByReader).cursor[Rating]().collect[List]()
 
       //Can we prevent the execution of this?
-      readers <- db.collection[BSONCollection]("readers").find(usersQuery(ratings.map(x => x.reader))).sort(sortById).cursor[Reader]().collect[List]()
+      readers <- db.collection[BSONCollection] ("readers").find (usersQuery (ratings.map (x => x.reader))).sort (sortById).cursor[Reader] ().collect[List] ()
 
-    } yield Result(book.head.bookTitle, ratings zip readers map { x => RatingView(x) })
+      result = Result(book.head.bookTitle, ratings zip readers map { x => RatingView(x) })
+
+    } yield result
 
   }
 }
 
 object GetRatingsByISBN {
 
-  sealed case class Query(isbn: String)
+  case class Query(isbn: String)
 
   case class RatingView(username: String, rating: Int)
 
