@@ -1,11 +1,11 @@
-package com.basdek.goodreads
+package com.basdek.goodreads.services
 
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 
 import scala.concurrent.Future
 
 trait ConnectionService {
-  this: ConfigurationService =>
+  this: AbstractConfigurationService =>
 
   private val driver = new MongoDriver()
   private val connectionPool: MongoConnection = driver.connection(dbHost :: Nil)

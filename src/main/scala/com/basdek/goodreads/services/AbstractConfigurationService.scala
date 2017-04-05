@@ -1,6 +1,6 @@
-package com.basdek.goodreads
+package com.basdek.goodreads.services
 
-trait ConfigurationService {
+trait AbstractConfigurationService {
 
   //TODO before production: authentication!
   //TODO it would be nice to not be restricted to the default port.

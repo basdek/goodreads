@@ -1,7 +1,7 @@
 package com.basdek.goodreads.tests.unit.features
 
-import com.basdek.goodreads.ConnectionService
 import com.basdek.goodreads.features.reader.GetRatingsByUserSlug
+import com.basdek.goodreads.services.ConnectionService
 import org.scalatest.{AsyncFlatSpec, Matchers}
 
 class GetRatingsByUserSlugTest extends AsyncFlatSpec with Matchers {
