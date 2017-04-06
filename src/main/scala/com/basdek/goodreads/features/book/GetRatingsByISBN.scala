@@ -5,15 +5,19 @@ import com.basdek.goodreads.models.read._
 import com.basdek.goodreads.services.ConnectionService
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.bson.{BSONDocument, BSONObjectID}
+import com.basdek.goodreads.features.ChainUtils._
+import scala.concurrent.{ExecutionContext, Future}
+import scalaz.{EitherT, \/}
+import scalaz.Scalaz._
 
-import scala.concurrent.Future
 
 class GetRatingsByISBN {
   this: ConnectionService =>
 
-  def handle(q: Query): Future[Result] = {
+  def handle(q: Query) (implicit ec: ExecutionContext): Future[Error \/ Result] = {
 
     val bookQuery = BSONDocument("isbn" -> q.isbn)
+    val bookNotFoundError : Error = new Error("Book with ISBN " + q.isbn + " not found.")
 
     def ratingsQuery(id: BSONObjectID) = BSONDocument("book" -> id)
 
@@ -24,19 +28,17 @@ class GetRatingsByISBN {
     val sortByReader = BSONDocument("reader" -> 1)
     val sortById = BSONDocument("_id" -> 1)
 
-    for {
-      db <- db()
-      book <- db.collection[BSONCollection]("books").find(bookQuery).cursor[Book]().collect[List](1)
-      ratings <- db.collection[BSONCollection]("ratings").find(ratingsQuery(book.head._id)).sort(sortByReader).cursor[Rating]().collect[List]()
-
-      //Can we prevent the execution of this?
-      readers <- db.collection[BSONCollection] ("readers").find (usersQuery (ratings.map (x => x.reader))).sort (sortById).cursor[Reader] ().collect[List] ()
-
-      result = Result(book.head.bookTitle, ratings zip readers map { x => RatingView(x) })
-
+    val logicChain = for {
+      db <- EitherT.right(db())
+      book <- EitherT(predicateInjector[List[Book]](db.collection[BSONCollection]("books").find(bookQuery).cursor[Book]().collect[List](1), x => x.nonEmpty, bookNotFoundError))
+      ratings <- EitherT.right(db.collection[BSONCollection]("ratings").find(ratingsQuery(book.head._id)).sort(sortByReader).cursor[Rating]().collect[List]())
+      readers <- EitherT.right(db.collection[BSONCollection] ("readers").find (usersQuery (ratings.map (x => x.reader))).sort (sortById).cursor[Reader] ().collect[List] (ratings.length))
+      result = Result(book.head.bookTitle, ratings zip readers map {x => RatingView(x)})
     } yield result
 
+    logicChain.run
   }
+
 }
 
 object GetRatingsByISBN {

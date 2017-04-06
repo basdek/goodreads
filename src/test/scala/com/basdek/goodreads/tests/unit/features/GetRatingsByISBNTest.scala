@@ -1,8 +1,10 @@
 package com.basdek.goodreads.tests.unit.features
 
-import com.basdek.goodreads.ConnectionService
 import com.basdek.goodreads.features.book.GetRatingsByISBN
+import com.basdek.goodreads.services.ConnectionService
 import org.scalatest.{AsyncFlatSpec, Matchers}
+
+import scalaz.{-\/, \/-}
 
 
 class GetRatingsByISBNTest extends AsyncFlatSpec with Matchers {
@@ -16,9 +18,14 @@ class GetRatingsByISBNTest extends AsyncFlatSpec with Matchers {
   it should "retrieve a book with it's ratings successfully" in {
     val future = feature.handle(new GetRatingsByISBN.Query("1"))
     future map { result => {
-      result.bookTitle should equal("Thus spoke Zarathustra")
-      result.ratings.length should equal(1)
-      result.ratings.head.username should equal("Bas Kwant, de")
+      result match {
+        case \/-(r) => {
+          r.bookTitle should equal("Thus spoke Zarathustra")
+          r.ratings.length should equal(1)
+          r.ratings.head.username should equal("Bas Kwant, de")
+        }
+        case _ => fail("Unexpected left sided disjunction.")
+      }
     }
     }
   }
@@ -26,9 +33,24 @@ class GetRatingsByISBNTest extends AsyncFlatSpec with Matchers {
   it should "retrieve a book without ratings successfully" in {
     val future = feature.handle(new GetRatingsByISBN.Query("5"))
     future map { result => {
-      result.bookTitle should equal("The black swan")
-      result.ratings.length should equal(0)
+      result match {
+        case \/-(r) => {
+          r.bookTitle should equal("The black swan")
+          r.ratings.length should equal(0)
+        }
+        case _ => fail("Unexpected left sided disjunction.")
+      }
     }
+    }
+  }
+
+  it should "correctly return an error for a non existing book" in {
+    val future = feature.handle(new GetRatingsByISBN.Query("does.not.exist"))
+    future map { result =>
+      result match {
+        case -\/(e) => {e should not equal(null)} //<- bit of a strange test, something more elegant? TODO
+        case _ => fail("Unexpected right sided disjunction. What?!")
+      }
     }
   }
 }
