@@ -2,17 +2,19 @@ package com.basdek.goodreads.services
 
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait ConnectionService {
   this: AbstractConfigurationService =>
 
-  private val driver = new MongoDriver()
-  private val connectionPool: MongoConnection = driver.connection(dbHost :: Nil)
+  private val connectionPool: MongoConnection = ConnectionService.driver.connection(dbHost :: Nil)
 
   //Is that correct? TODO
-  implicit val executionContext = connectionPool.actorSystem.dispatcher
 
-  protected def db(): Future[DefaultDB] = connectionPool.database(dbDb)
+  protected def db() (implicit ec : ExecutionContext): Future[DefaultDB] = connectionPool.database(dbDb)
 
+}
+
+object ConnectionService {
+  val driver = new MongoDriver()
 }

@@ -35,6 +35,7 @@ object Server extends App with Directives with JsonSupport {
   val host = "localhost"
   val port = 8000
 
+  //This is probably a bit wasteful, please recheck this pattern. TODO
   val getRatingsByISBN = new GetRatingsByISBN
     with ConnectionService with ConfigService
   val getRatingsByUserSlug = new GetRatingsByUserSlug
