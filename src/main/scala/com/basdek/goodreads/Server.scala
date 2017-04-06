@@ -14,11 +14,16 @@ import spray.json.DefaultJsonProtocol
 
 import scalaz.{-\/, \/-}
 
+case class RatingRequest(rating: Int)
+
 trait JsonSupport extends DefaultJsonProtocol {
   implicit val ratingByUserSlugFormat = jsonFormat2(GetRatingsByUserSlug.RatingView.apply)
   implicit val ratingByUserSlugRatingViewFormat = jsonFormat2(GetRatingsByUserSlug.Result)
   implicit val ratingByISBNRatingViewFormat = jsonFormat2(GetRatingsByISBN.RatingView.apply)
   implicit val ratingByISBNFormat = jsonFormat2(GetRatingsByISBN.Result)
+  implicit val createdRatingFormat = jsonFormat3(Create.Result)
+
+  implicit val ratingRequest = jsonFormat1(RatingRequest)
 }
 
 object Server extends App with Directives with JsonSupport {
@@ -61,9 +66,7 @@ object Server extends App with Directives with JsonSupport {
         onSuccess(getRatingsByUserSlug.handle(GetRatingsByUserSlug.Query(slug))) {
           res => {
             res match {
-             //Inelegant.
-              case -\/(e) => complete(StatusCodes.NotFound, e.toString)
-
+              case -\/(e) => complete(StatusCodes.NotFound, e.toString) //Inelegant.
               case \/-(r) => complete(r)
             }
           }
@@ -75,8 +78,21 @@ object Server extends App with Directives with JsonSupport {
   val ratingCreateRoute = path("readers" / """([a-z\-]*)""".r / "isbn" / """([1-9\-]*)""".r) {
     (slug, isbn) => {
       post {
-        onSuccess(createRating.handle(Create.Command(isbn, slug, 5))) {
-          result => complete(None)
+        entity(as[RatingRequest]) { body =>
+          //TODO: maybe some proper validation lib someday?
+          if (0 > body.rating || body.rating > 5) {
+            complete(StatusCodes.BadRequest, "Ratings should be between 1 and 5")
+          }
+          else {
+            onSuccess(createRating.handle(Create.Command(isbn, slug, body.rating))) {
+              res => {
+                res match {
+                  case -\/(e) => complete(StatusCodes.BadRequest, e.toString)
+                  case \/-(r) => complete(r)
+                }
+              }
+            }
+          }
         }
       }
     }
